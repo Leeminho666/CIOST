@@ -1,0 +1,2282 @@
+[
+    {
+        "id": "9906a5219c02abdc",
+        "type": "tab",
+        "label": "Data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c1ea3ad7d9f37ed0",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1270,
+        "y": 960,
+        "wires": [
+            [
+                "83a98365dbb60de1"
+            ]
+        ]
+    },
+    {
+        "id": "62947faa4b22dc27",
+        "type": "inject",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "DESCRIBE temperature;",
+        "payloadType": "date",
+        "x": 960,
+        "y": 960,
+        "wires": [
+            [
+                "8e84b22e55a1a1ba"
+            ]
+        ]
+    },
+    {
+        "id": "83a98365dbb60de1",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1450,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "bc6370f34ea3f76e",
+        "type": "ui_text",
+        "z": "9906a5219c02abdc",
+        "group": "d36ba47e50892fd1",
+        "order": 3,
+        "width": 13,
+        "height": 1,
+        "name": "",
+        "label": "",
+        "format": "Clocking In & Out System with Temperature Detector",
+        "layout": "col-center",
+        "className": "",
+        "x": 610,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "4c27f726783fe5e2",
+        "type": "ui_gauge",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "6996b9396ab7b704",
+        "order": 1,
+        "width": 7,
+        "height": 5,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "°C",
+        "format": "{{msg.temperature}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#cbd90d",
+            "#00e61b",
+            "#ca3838"
+        ],
+        "seg1": "25",
+        "seg2": "50",
+        "className": "",
+        "x": 750,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "ece29e19c864c7ff",
+        "type": "ui_text",
+        "z": "9906a5219c02abdc",
+        "group": "6996b9396ab7b704",
+        "order": 9,
+        "width": 8,
+        "height": 1,
+        "name": "",
+        "label": "Time",
+        "format": "{{msg.time}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 730,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a6d41d8eb5281e05",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "id",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "18818356b6814bd6",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Email function",
+        "func": "\ndate = new Date().toLocaleString();\nmsg.topic = \"Body Temperature\";\n\nvar message = msg.payload;\nmsg.tempe = message[0]['Temp'];\nmsg.eid = message[0]['ID'];\nmsg.email = message[0]['email'];\nmsg.to = msg.email;\ntime_ms = new Date().getTime();\ntime = new Date().toLocaleString(time_ms);\nmsg.time = time;\n\nif (msg.tempe > 37.5)\n{\n    text = (\"High body temperature detected!!\\nStay calm and wait for further notice. \\nThank You and Stay Healthy!\");\n    msg.payload = (\"Employee ID\\t:\"+msg.eid+\"\\n\"+\"Date & Time\\t:\" +msg.time+\"\\n\"+\"Temperature\\t:\" +msg.tempe+\"\\n\" +text+\"\\n\");\n}\nelse\n{\n    \n    l = {\n        text : \"Body temperature normal.\\nSTAY SAFE! STAY HEALTHY!! STAY FUN!!!\",\n    };\n    msg.payload = (\"Employee ID\\t:\"+msg.eid+\"\\n\"+\"Date & Time\\t:\" +msg.time+\"\\n\"+\"Temperature\\t:\" +msg.tempe+\"\\n\" +l.text+\"\\n\");\n}\n\nreturn msg;\n//(flow.get(\"temp\") > 37.5)",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 460,
+        "wires": [
+            [
+                "35946f11b00b7943",
+                "d3193681649fb487"
+            ]
+        ]
+    },
+    {
+        "id": "d3193681649fb487",
+        "type": "e-mail",
+        "z": "9906a5219c02abdc",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "",
+        "x": 1090,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "e953877a267e4e5e",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Email",
+        "func": "\nupdate = \"SELECT email FROM try1 ORDER BY Time DESC LIMIT 1\";\nmsg.topic = update;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1090,
+        "y": 380,
+        "wires": [
+            [
+                "c7b2f972a78c5183"
+            ]
+        ]
+    },
+    {
+        "id": "c7b2f972a78c5183",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 930,
+        "y": 420,
+        "wires": [
+            [
+                "3aeb04d9121d52e2"
+            ]
+        ]
+    },
+    {
+        "id": "3aeb04d9121d52e2",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "email",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1100,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "24ad9eb3931c2183",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "display data",
+        "func": "time_ms = new Date().getTime();\nvar message = msg.payload;\nmsg.temperature = message[0]['Temp'];\nmsg.id = message[0]['ID'];\nmsg.email = message[0]['email'];\ntime_ms = new Date().getTime();\ntime = new Date().toLocaleString(time_ms);\nmsg.time = time;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 260,
+        "wires": [
+            [
+                "4c27f726783fe5e2",
+                "8aa7ec4c41f6c350",
+                "b3775e1b6df37012",
+                "ece29e19c864c7ff"
+            ]
+        ]
+    },
+    {
+        "id": "77800afb2e8c250f",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select ID",
+        "func": "update = \"SELECT ID FROM try1 ORDER BY Time DESC LIMIT 1\";\n\nmsg.topic = update;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 340,
+        "wires": [
+            [
+                "754da7102381d3ae"
+            ]
+        ]
+    },
+    {
+        "id": "754da7102381d3ae",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1030,
+        "y": 340,
+        "wires": [
+            [
+                "a6d41d8eb5281e05"
+            ]
+        ]
+    },
+    {
+        "id": "eb2d2185242cbde1",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1030,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "1b271e76c14ec720",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "temp",
+                "pt": "flow",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1210,
+        "y": 240,
+        "wires": [
+            [
+                "2b4a9e10c4a45457"
+            ]
+        ]
+    },
+    {
+        "id": "64c26532e2ecd5d6",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Get Data ",
+        "func": "//update = \"SELECT email FROM try1 WHERE try1.ID = \"+flow.get(\"id\")+\"\";\nupdate = \"SELECT * FROM try1 ORDER BY Time DESC LIMIT 1\";\nmsg.topic = update;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 200,
+        "wires": [
+            [
+                "1188424080ff33b2"
+            ]
+        ]
+    },
+    {
+        "id": "35946f11b00b7943",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1090,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "1188424080ff33b2",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 710,
+        "y": 200,
+        "wires": [
+            [
+                "2e9f2571b4fafefd",
+                "34e51d6bcc0bf350",
+                "77800afb2e8c250f",
+                "24ad9eb3931c2183",
+                "18818356b6814bd6"
+            ]
+        ]
+    },
+    {
+        "id": "34e51d6bcc0bf350",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Temp",
+        "func": "update = \"SELECT Temp FROM try1 ORDER BY Time DESC LIMIT 1\";\n//update = \"SELECT email FROM try1 ORDER BY Time DESC LIMIT 1\";\nmsg.topic = update;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 890,
+        "y": 200,
+        "wires": [
+            [
+                "93fcf1dbe9548528"
+            ]
+        ]
+    },
+    {
+        "id": "93fcf1dbe9548528",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1050,
+        "y": 200,
+        "wires": [
+            [
+                "77db9b782158308d"
+            ]
+        ]
+    },
+    {
+        "id": "77db9b782158308d",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "temp1",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1220,
+        "y": 200,
+        "wires": [
+            [
+                "e58b4ee54c10e030"
+            ]
+        ]
+    },
+    {
+        "id": "e58b4ee54c10e030",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Convert Temp",
+        "func": "ff = flow.get(\"temp1\");\n//msg.payload = ff.toString();\n//msg.payload = ff.replace(/[^0-9]/g,'');\nmsg.payload = ff.replace(/[^0-9\\.]+/g,\"\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 240,
+        "wires": [
+            [
+                "1b271e76c14ec720",
+                "eb2d2185242cbde1"
+            ]
+        ]
+    },
+    {
+        "id": "2b4a9e10c4a45457",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "func": "ff = flow.get(\"temp\");\nmsg.topic = ff;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2e9f2571b4fafefd",
+        "type": "delay",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 920,
+        "y": 380,
+        "wires": [
+            [
+                "e953877a267e4e5e"
+            ]
+        ]
+    },
+    {
+        "id": "5aa963f42443d4a0",
+        "type": "ui_text_input",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "label": "Key In Employee ID",
+        "tooltip": "",
+        "group": "4b26b2949b9228c2",
+        "order": 1,
+        "width": 7,
+        "height": 1,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "topic",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 140,
+        "y": 420,
+        "wires": [
+            [
+                "2d9d011c8150fdc8"
+            ]
+        ]
+    },
+    {
+        "id": "796242d852b84b64",
+        "type": "ui_button",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "4b26b2949b9228c2",
+        "order": 2,
+        "width": 5,
+        "height": 1,
+        "passthru": false,
+        "label": "Go",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "mi-login",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 90,
+        "y": 460,
+        "wires": [
+            [
+                "3f18a27c285a04cb"
+            ]
+        ]
+    },
+    {
+        "id": "3f18a27c285a04cb",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Data",
+        "func": "search = \"SELECT * FROM try1 WHERE ID = \"+flow.get(\"inputid\")+\"\";\nmsg.topic = search;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 460,
+        "wires": [
+            [
+                "28017c18efb4db35"
+            ]
+        ]
+    },
+    {
+        "id": "2d9d011c8150fdc8",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "inputid",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 400,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "28017c18efb4db35",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 410,
+        "y": 460,
+        "wires": [
+            [
+                "8e38fe45648d55ca"
+            ]
+        ]
+    },
+    {
+        "id": "8aa7ec4c41f6c350",
+        "type": "ui_text",
+        "z": "9906a5219c02abdc",
+        "group": "6996b9396ab7b704",
+        "order": 7,
+        "width": 8,
+        "height": 1,
+        "name": "",
+        "label": "ID",
+        "format": "{{msg.id}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 730,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "ab4b606080f030dd",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "9be8935050973726",
+        "type": "ui_button",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "d36ba47e50892fd1",
+        "order": 24,
+        "width": 8,
+        "height": 1,
+        "passthru": false,
+        "label": "Update Table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "mi-update",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 90,
+        "y": 580,
+        "wires": [
+            [
+                "d6f0fe52916df273",
+                "5b02111272999cf2"
+            ]
+        ]
+    },
+    {
+        "id": "a5949ed7c5f1a777",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 430,
+        "y": 580,
+        "wires": [
+            [
+                "ee5beef0122215f7"
+            ]
+        ]
+    },
+    {
+        "id": "55dbbad03456c357",
+        "type": "ui_table",
+        "z": "9906a5219c02abdc",
+        "group": "d36ba47e50892fd1",
+        "name": "Table",
+        "order": 7,
+        "width": 22,
+        "height": 8,
+        "columns": [
+            {
+                "field": "Employee ID",
+                "title": "ID No.",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Temperature",
+                "title": "Temperature",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Date&Time",
+                "title": "Date & Time",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Email",
+                "title": "E-mail",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 430,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "ee5beef0122215f7",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Print in Table",
+        "func": "var message = msg.payload;\ncount = flow.get(\"no\");\nvar i = 0;\nvar prints=[];\n\nfor (i = 0; i < count; i++)\n    {\n    rt = message[i]['Time'];\n    prints[i] = \n        {\n                \n            \"Employee ID\" : \"\"+message[i]['ID']+\"\",\n            \"Temperature\" : \"\"+message[i]['Temp']+\"\",\n            \"Date&Time\" : rt.toLocaleString(),\n            \"Email\" : \"\"+message[i]['email']+\"\"\n                \n        }\n            \n\n                \n         \n    }\nmsg.payload = prints;\nreturn msg; \n      \n  \n      \n\n    \n    \n\n\n\n/*\n prints = [{\n                \"Employee ID\" : \"\"+eid1+\"\",\n                \"Temperature\" : \"\"+bodyt1+\"\",\n                \"Date&Time\" : \"\"+time1+\"\",\n                \"Email\" : \"\"+email1+\"\"\n                \n              },\n             {\n                \"Employee ID\" : \"\"+eid2+\"\",\n                \"Temperature\" : \"\"+bodyt2+\"\",\n                \"Date&Time\" : \"\"+time2+\"\",\n                \"Email\" : \"\"+email2+\"\"\n              },\n              {\n                \"Employee ID\" : \"\"+eid3+\"\",\n                \"Temperature\" : \"\"+bodyt3+\"\",\n                \"Date&Time\" : \"\"+time3+\"\",\n                \"Email\" : \"\"+email3+\"\"\n              },\n            {\n\n}\n]\n*/\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 640,
+        "wires": [
+            [
+                "55dbbad03456c357",
+                "ab4b606080f030dd"
+            ]
+        ]
+    },
+    {
+        "id": "d6f0fe52916df273",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Data",
+        "func": "pp = \"SELECT * FROM try1\";\nmsg.topic = pp;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 580,
+        "wires": [
+            [
+                "a5949ed7c5f1a777"
+            ]
+        ]
+    },
+    {
+        "id": "26f1367134194089",
+        "type": "http in",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "url": "clockinoutsystem",
+        "method": "get",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a5b194d7f962faa",
+        "type": "http response",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "HI": "Hello"
+        },
+        "x": 710,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "8b5d8ae93d86f806",
+        "type": "template",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "plain",
+        "template": "<html>\n    <head>\n        <title>Node.Red WELCOME</title>\n    </head>\n    <body>\n        <h1>Welcome</h1>\n        <h2>Enviroment , Humidity & Temperature Detector with Clock-in System</h2>\n        <p>Design Phase 1: Getting familiar with RPI, Jetson Nano and Node-Red </p>\n    </body>\n</html>\n\n\n\n",
+        "output": "str",
+        "x": 380,
+        "y": 200,
+        "wires": [
+            [
+                "64c26532e2ecd5d6",
+                "8a326f438f87f943"
+            ]
+        ]
+    },
+    {
+        "id": "8a326f438f87f943",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "func": "msg.payload = \"done\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "9a5b194d7f962faa"
+            ]
+        ]
+    },
+    {
+        "id": "a6955f7ed0c8d87b",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "UPDATE TABLE",
+        "info": "",
+        "x": 120,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "580e044e33056a32",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "TITLE",
+        "info": "",
+        "x": 610,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ab194864a45beb64",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "Find Record For Specific Person",
+        "info": "",
+        "x": 170,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "f601da3b83fc8bbe",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "RESPONSE TO PYTHON",
+        "info": "",
+        "x": 890,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "be356075ff9c1d6b",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "Temperature Gauge Display",
+        "info": "",
+        "x": 460,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "a6514c6e1c341eb0",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "TIME",
+        "info": "",
+        "x": 850,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "163a362c57c24eba",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "GET TEMPERATURE",
+        "info": "",
+        "x": 1440,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "9eb9105e982d3e22",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "GET TEMPERATURE IN FLOAT",
+        "info": "",
+        "x": 1470,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "d309dca7786b56ef",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "GET ID",
+        "info": "",
+        "x": 1330,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "4f6939e640c5b144",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "GET AND SEND EMAIL",
+        "info": "GET A",
+        "x": 1320,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "8e38fe45648d55ca",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "func": "//var time = flow.get(\"ttimee\");\n//var eid = flow.get(\"eid\");\n//var bodyt = flow.get(\"bodytemp\");\n//var email = flow.get(\"mail\");\n\nvar message = msg.payload;\ncount = flow.get(\"no\");\nmsg.id = message[0]['ID'];\nmsg.temperature = message[0]['Temp'];\nrt = message[0]['Time']\nmsg.time = rt.toLocaleString();\nmsg.email = message[0]['email'];\n prints =\n [\n {\n    \"Employee ID\" : message[0]['ID'],\n    \"Email\" : message[0]['email'],\n    \"Temperature\" : message[0]['Temp'],\n    \"Date&Time\" : rt.toLocaleString()\n }\n ]\n\n    msg.payload = prints;\n  \n\nreturn msg;\n    \n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 460,
+        "wires": [
+            [
+                "5c5b9d2a84bc8901",
+                "8aa7ec4c41f6c350",
+                "4c27f726783fe5e2",
+                "ece29e19c864c7ff",
+                "b3775e1b6df37012"
+            ]
+        ]
+    },
+    {
+        "id": "167f1cba6797ae33",
+        "type": "file",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 280,
+        "y": 820,
+        "wires": [
+            [
+                "84b09877e67f6892"
+            ]
+        ]
+    },
+    {
+        "id": "f51dcb907ebdaa14",
+        "type": "csv",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "once",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "Employee ID, Temperature, Date&Time, Email",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 450,
+        "y": 780,
+        "wires": [
+            [
+                "167f1cba6797ae33"
+            ]
+        ]
+    },
+    {
+        "id": "f9cd27c2caccc5df",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Data",
+        "func": "msg.topic = \"SELECT * FROM try1\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 740,
+        "wires": [
+            [
+                "b48789d594c90373"
+            ]
+        ]
+    },
+    {
+        "id": "b48789d594c90373",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 450,
+        "y": 740,
+        "wires": [
+            [
+                "42e3d33e054e959c"
+            ]
+        ]
+    },
+    {
+        "id": "eb50974496b72260",
+        "type": "ui_button",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "d36ba47e50892fd1",
+        "order": 25,
+        "width": 8,
+        "height": 1,
+        "passthru": false,
+        "label": "Download Table",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "mi-file_download",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 100,
+        "y": 740,
+        "wires": [
+            [
+                "f9cd27c2caccc5df"
+            ]
+        ]
+    },
+    {
+        "id": "42e3d33e054e959c",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Print to file",
+        "func": "var message = msg.payload;\ncount = flow.get(\"no\");\nvar i = 0;\nvar prints=[];\n\n\nfor (i = 0; i < count; i++)\n    {\n        rt = message[i]['Time'];\n        prints[i] = \n            {\n                \n                \"Employee ID\" : \"\"+message[i]['ID']+\"\",\n                \"Temperature\" : \"\"+message[i]['Temp']+\"\",\n                \"Date&Time\" : rt.toLocaleString(),\n                \"Email\" : \"\"+message[i]['email']+\"\"\n                \n            }\n    }\n\nnow = Date().toLocaleString();\nfname = now.replace(/[^0-9\\.]+/g,\"\");\nmsg.filename = +fname+\".csv\";\n\nmsg.payload = prints;\nreturn msg;\n\n/*\nvar message = msg.payload;\ncount = flow.get(\"no\");\n\n    \n    time1 = message[1]['Time'];\n    eid1 = message[1]['ID'];\n    bodyt1 = message[1]['Temp'];\n    email1 = message[1]['email'];\n\n    time2 = message[0]['Time'];\n    eid2 = message[0]['ID'];\n    bodyt2 = message[0]['Temp'];\n    email2 = message[0]['email'];\n    \n    time3 = message[2]['Time'];\n    eid3 = message[2]['ID'];\n    bodyt3 = message[2]['Temp'];\n    email3 = message[2]['email'];\n    \n    time4 = message[3]['Time'];\n    eid4 = message[3]['ID'];\n    bodyt4 = message[3]['Temp'];\n    email4 = message[3]['email'];\n\n    prints = [{\n                \"Employee ID\" : \"\"+eid1+\"\",\n                \"Temperature\" : \"\"+bodyt1+\"\",\n                \"Date&Time\" : \"\"+time1+\"\",\n                \"Email\" : \"\"+email1+\"\"\n                \n              },\n             {\n                \"Employee ID\" : \"\"+eid2+\"\",\n                \"Temperature\" : \"\"+bodyt2+\"\",\n                \"Date&Time\" : \"\"+time2+\"\",\n                \"Email\" : \"\"+email2+\"\"\n              },\n              {\n                \"Employee ID\" : \"\"+eid3+\"\",\n                \"Temperature\" : \"\"+bodyt3+\"\",\n                \"Date&Time\" : \"\"+time3+\"\",\n                \"Email\" : \"\"+email3+\"\"\n              },\n              {\n                \"Employee ID\" : \"\"+eid4+\"\",\n                \"Temperature\" : \"\"+bodyt4+\"\",\n                \"Date&Time\" : \"\"+time4+\"\",\n                \"Email\" : \"\"+email4+\"\"\n              }\n              ]\nnow = Date().toLocaleString();\nfname = now.replace(/[^0-9\\.]+/g,\"\");\nmsg.filename = +fname+\".csv\";\nmsg.payload = prints;\nreturn msg;\n    */\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 780,
+        "wires": [
+            [
+                "f51dcb907ebdaa14"
+            ]
+        ]
+    },
+    {
+        "id": "84b09877e67f6892",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "326f77badf5aed3e",
+        "type": "ui_text_input",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "label": "Input Email ",
+        "tooltip": "",
+        "group": "d36ba47e50892fd1",
+        "order": 28,
+        "width": 9,
+        "height": 1,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "topic",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 590,
+        "y": 660,
+        "wires": [
+            [
+                "c3ba38c89394feb0"
+            ]
+        ]
+    },
+    {
+        "id": "c3ba38c89394feb0",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "email2",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 780,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec99907dec867519",
+        "type": "file",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "filename": "",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 440,
+        "y": 940,
+        "wires": [
+            [
+                "df268da7e3a7c36b",
+                "87bfaaf1feeb1a10"
+            ]
+        ]
+    },
+    {
+        "id": "f5f9ccc4daf8fd94",
+        "type": "csv",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "sep": ",",
+        "hdrin": "",
+        "hdrout": "once",
+        "multi": "one",
+        "ret": "\\r\\n",
+        "temp": "Employee ID, Temperature, Date&Time, Email",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 290,
+        "y": 940,
+        "wires": [
+            [
+                "ec99907dec867519"
+            ]
+        ]
+    },
+    {
+        "id": "1e3ca3cba2815de9",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Data",
+        "func": "msg.topic = \"SELECT * FROM try1\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 900,
+        "wires": [
+            [
+                "add83b7dfa16ce1e"
+            ]
+        ]
+    },
+    {
+        "id": "add83b7dfa16ce1e",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 470,
+        "y": 900,
+        "wires": [
+            [
+                "ac3f9282bcef330e"
+            ]
+        ]
+    },
+    {
+        "id": "ac3f9282bcef330e",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Print to file",
+        "func": "//var time = flow.get(\"ttimee\");\n//var eid = flow.get(\"eid\");\n//var bodyt = flow.get(\"bodytemp\");\n//var email = flow.get(\"mail\");\nvar message = msg.payload;\ncount = flow.get(\"no\");\nvar i = 0;\nvar prints=[];\n\n\nfor (i = 0; i < count; i++)\n    {\n        rt = message[i]['Time'];\n        prints[i] = \n            {\n                \n                \"Employee ID\" : \"\"+message[i]['ID']+\"\",\n                \"Temperature\" : \"\"+message[i]['Temp']+\"\",\n                \"Date&Time\" : rt.toLocaleString(),\n                \"Email\" : \"\"+message[i]['email']+\"\"\n                \n            }\n    }\n\nnow = Date().toString();\nfname = now.replace(/[^0-9\\.]+/g,\"\");\nmsg.filename = +fname+\".csv\";\n\nmsg.payload = prints;\nreturn msg;\n    \n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 900,
+        "wires": [
+            [
+                "f5f9ccc4daf8fd94"
+            ]
+        ]
+    },
+    {
+        "id": "df268da7e3a7c36b",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "747e54aebd035090",
+        "type": "e-mail",
+        "z": "9906a5219c02abdc",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "",
+        "x": 790,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "87bfaaf1feeb1a10",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "email function",
+        "func": "now = Date().toLocaleString();\nfname = now.replace(/[^0-9\\.]+/g,\"\");\n\nmsg.attachments =\n     { filename :  +fname+\".csv\", // name of the file that will be attached\n        content : msg.payload }; \nmsg.to = flow.get(\"email2\");\nmsg.topic = \"CIOT DATA\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 940,
+        "wires": [
+            [
+                "747e54aebd035090"
+            ]
+        ]
+    },
+    {
+        "id": "0653c36ff3306027",
+        "type": "ui_button",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "d36ba47e50892fd1",
+        "order": 29,
+        "width": 4,
+        "height": 1,
+        "passthru": false,
+        "label": "Send Data File",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "mi-email",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 120,
+        "y": 900,
+        "wires": [
+            [
+                "1e3ca3cba2815de9"
+            ]
+        ]
+    },
+    {
+        "id": "8e84b22e55a1a1ba",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "func": "msg.payload = \"Enviroment , Humidity & Temperature Detector with Clock-in System\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1100,
+        "y": 960,
+        "wires": [
+            [
+                "c1ea3ad7d9f37ed0"
+            ]
+        ]
+    },
+    {
+        "id": "caaf2ded1e6eeea9",
+        "type": "ui_form",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "label": "",
+        "group": "b6a7314d2ad213ad",
+        "order": 1,
+        "width": 24,
+        "height": 1,
+        "options": [
+            {
+                "label": "ID",
+                "value": "ID",
+                "type": "text",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Email",
+                "value": "Email",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "ID": "",
+            "Email": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "className": "",
+        "x": 950,
+        "y": 680,
+        "wires": [
+            [
+                "68ec5d945fbf4605"
+            ]
+        ]
+    },
+    {
+        "id": "be6eadd1d930d935",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1330,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "68ec5d945fbf4605",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Get New Data",
+        "func": "newid = msg.payload.ID;\nemaiill = msg.payload.Email;\n\n\nmsg.topic = \"INSERT into try1 (ID, email) VALUES (\"+newid+\",'\"+emaiill+\"')\";\n//msg.topic =  \"INSERT INTO S7_log(ID) VALUES\" + (\"+newid+\")\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1140,
+        "y": 680,
+        "wires": [
+            [
+                "239a3735cc281d3f",
+                "be6eadd1d930d935"
+            ]
+        ]
+    },
+    {
+        "id": "239a3735cc281d3f",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1330,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c093530967bc5bde",
+        "type": "inject",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "SELECT Time FROM try1",
+        "payloadType": "date",
+        "x": 940,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5d2a3ebe395ef964",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "func": "var msggg = msg.payload;\nvar time = [];\nfor (i = 0; i < 4; i++)\n{\n  rt = msggg[i]['Time'];\n  time[i] = rt.toString();\n  msg.payload = time;\n\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1260,
+        "y": 900,
+        "wires": [
+            [
+                "6949a2fc25ae3cf6"
+            ]
+        ]
+    },
+    {
+        "id": "c9ccaa5be2f99f19",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1090,
+        "y": 900,
+        "wires": [
+            [
+                "5d2a3ebe395ef964"
+            ]
+        ]
+    },
+    {
+        "id": "6949a2fc25ae3cf6",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1440,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "a7eaa5ca7f85a23a",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "no1",
+                "pt": "flow",
+                "to": "$string(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 760,
+        "wires": [
+            [
+                "eaf1b849b2305f07"
+            ]
+        ]
+    },
+    {
+        "id": "dba440e0a8d1af29",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1270,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "2235dd9b464ad06a",
+        "type": "mysql",
+        "z": "9906a5219c02abdc",
+        "mydb": "880d99c6d19913d9",
+        "name": "",
+        "x": 1290,
+        "y": 720,
+        "wires": [
+            [
+                "a7eaa5ca7f85a23a"
+            ]
+        ]
+    },
+    {
+        "id": "eaf1b849b2305f07",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "conversion",
+        "func": "ff = flow.get(\"no1\");\nmsg.payload = ff.replace(/[^0-9\\.]+/g,\"\");\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1290,
+        "y": 760,
+        "wires": [
+            [
+                "6670a5980cc80811"
+            ]
+        ]
+    },
+    {
+        "id": "6670a5980cc80811",
+        "type": "change",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "no",
+                "pt": "flow",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 950,
+        "y": 800,
+        "wires": [
+            [
+                "dba440e0a8d1af29"
+            ]
+        ]
+    },
+    {
+        "id": "5b02111272999cf2",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Select Data",
+        "func": "pp = \"SELECT No FROM try1 ORDER BY No DESC LIMIT 1\";\nmsg.topic = pp;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 720,
+        "wires": [
+            [
+                "2235dd9b464ad06a"
+            ]
+        ]
+    },
+    {
+        "id": "5c5b9d2a84bc8901",
+        "type": "ui_table",
+        "z": "9906a5219c02abdc",
+        "group": "4b26b2949b9228c2",
+        "name": "Table",
+        "order": 5,
+        "width": 18,
+        "height": 1,
+        "columns": [
+            {
+                "field": "Employee ID",
+                "title": "ID No.",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Email",
+                "title": "E-mail",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Temperature",
+                "title": "Temperature",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Date&Time",
+                "title": "Date & Time",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 550,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "f82a44fa301a3f9a",
+        "type": "ui_button",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "group": "4b26b2949b9228c2",
+        "order": 3,
+        "width": 5,
+        "height": 1,
+        "passthru": false,
+        "label": "Clear",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 90,
+        "y": 500,
+        "wires": [
+            [
+                "c3b24468d6ce539a"
+            ]
+        ]
+    },
+    {
+        "id": "c3b24468d6ce539a",
+        "type": "function",
+        "z": "9906a5219c02abdc",
+        "name": "Clear function",
+        "func": "msg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 500,
+        "wires": [
+            [
+                "5c5b9d2a84bc8901"
+            ]
+        ]
+    },
+    {
+        "id": "b3775e1b6df37012",
+        "type": "ui_text",
+        "z": "9906a5219c02abdc",
+        "group": "6996b9396ab7b704",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Email",
+        "format": "{{msg.email}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 730,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "752823cc1d746fe6",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "SEND DATA FILE IN CSV FORMAT",
+        "info": "",
+        "x": 180,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "83768f0c7b8fd5ba",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "DOWNLOAD TABLE IN CSV FORMAT",
+        "info": "",
+        "x": 190,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "37f11bb6187fed82",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "TESTER",
+        "info": "",
+        "x": 920,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "63cc6493a2e55f6f",
+        "type": "comment",
+        "z": "9906a5219c02abdc",
+        "name": "GET NEW EMPLOYEE INFO TO SQL",
+        "info": "",
+        "x": 1050,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "2f74ed3e68b64e90",
+        "type": "mqtt in",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "topic": "test/test1",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "b467eb636175f63d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "8b5d8ae93d86f806"
+            ]
+        ]
+    },
+    {
+        "id": "a63d029a3c3cd5b5",
+        "type": "debug",
+        "z": "9906a5219c02abdc",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 410,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3d70e5e1cbc5e851",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 1,
+        "width": 24,
+        "height": 1
+    },
+    {
+        "id": "ad85d405c2c3b292",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 2,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "6974dea61cfd85f0",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 4,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "3fea9d75fd3d0bad",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 5,
+        "width": 24,
+        "height": 1
+    },
+    {
+        "id": "5ba7ed734c0234a8",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "4cd092604a9dae2e",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 8,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "951e37b4627dc0a0",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 9,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "9a32c78d13c44ed6",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 10,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "5375607c9ede2136",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 11,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "58a2ebfe85107840",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 12,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "a0cecb0027d16708",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 13,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "f6fd4bb3e20b400f",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 14,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "eeae502b38cd1599",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 15,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "ff70b098d65b7b08",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 16,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "614be429a17a482e",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 17,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "a2811268e53e8be8",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 18,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "88189bfa2ad0d74d",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 19,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "821872041c5de013",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 20,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "4b7892d26af6f9cf",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 21,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "1dad7cd542efbaa8",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 22,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "55c49d3d0a514ed6",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 23,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "d1d239ef34357d1a",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 26,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "1858316ea48dafd0",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 27,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "ee89bace141c027d",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "d36ba47e50892fd1",
+        "order": 30,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "f683af8a2dfba7d8",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "6996b9396ab7b704",
+        "order": 2,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "471e27b88405d69c",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "6996b9396ab7b704",
+        "order": 3,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "e34e29f743ab9903",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "6996b9396ab7b704",
+        "order": 4,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "ed8be2d3cc79559f",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "6996b9396ab7b704",
+        "order": 5,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "eee240c0fd56ec77",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "6996b9396ab7b704",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "bca91caf0e43c0ba",
+        "type": "ui_spacer",
+        "z": "9906a5219c02abdc",
+        "name": "spacer",
+        "group": "4b26b2949b9228c2",
+        "order": 4,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "880d99c6d19913d9",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "jovin-test1",
+        "tz": "GMT+8",
+        "charset": "UTF8"
+    },
+    {
+        "id": "d36ba47e50892fd1",
+        "type": "ui_group",
+        "name": "Data Table Display",
+        "tab": "ba61d5550c6318b5",
+        "order": 1,
+        "disp": true,
+        "width": 24,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "6996b9396ab7b704",
+        "type": "ui_group",
+        "name": "Data In",
+        "tab": "edd2ce0541107cf7",
+        "order": 2,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4b26b2949b9228c2",
+        "type": "ui_group",
+        "name": "Search",
+        "tab": "edd2ce0541107cf7",
+        "order": 2,
+        "disp": true,
+        "width": 18,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b6a7314d2ad213ad",
+        "type": "ui_group",
+        "name": "New Employee",
+        "tab": "ba61d5550c6318b5",
+        "order": 2,
+        "disp": true,
+        "width": 24,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "b467eb636175f63d",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "tls": "94a2450dc9ccc734",
+        "clientid": "test-client",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "test/test1/hi",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ba61d5550c6318b5",
+        "type": "ui_tab",
+        "name": "Data",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "edd2ce0541107cf7",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "94a2450dc9ccc734",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "server.crt",
+        "keyname": "server-nopass.key",
+        "caname": "ca.crt",
+        "servername": "",
+        "verifyservercert": false,
+        "alpnprotocol": ""
+    }
+]
